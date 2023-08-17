@@ -416,7 +416,11 @@ func quicDial(hostname, rAddr string, lAddr net.IP, tlsConfig *tls.Config, confi
 		return nil, nil, err
 	}
 	// use DialEarly so that we attempt to use 0-RTT DNS queries, it's lower latency (if the server supports it)
-	earlyConn, err := quic.DialEarly(udpConn, udpAddr, hostname, tlsConfig, config)
+	//convert udpAddr to a net.PacketConn
+	// net.Addr from string
+
+	earlyConn, err := quic.DialEarly(context.Background(), udpConn, udpAddr, tlsConfig, config)
+	//earlyConn, err := quic.DialEarly(context.Background(), udpAddr, hostname, tlsConfig, config)
 	if err != nil {
 		// don't leak filehandles / sockets; if we got here udpConn must exist
 		_ = udpConn.Close()
